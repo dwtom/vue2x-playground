@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2020-12-19 17:02:20
  * @LastEditors: Dong Wei
- * @LastEditTime: 2020-12-21 16:36:54
+ * @LastEditTime: 2020-12-21 16:56:35
  * @FilePath: \vue2x-playground\src\views\echarts\clickEvent.vue
 -->
 <template>
@@ -50,7 +50,7 @@ export default {
             },
             {
               name: 'c',
-              number: 13,
+              number: 14,
               value: 1000
             }
           ]
