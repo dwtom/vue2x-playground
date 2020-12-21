@@ -1,18 +1,52 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div class="home-center">
+      <List>
+        <ListItem
+          v-for="(item, index) in list"
+          :key="`mainlist-${index}`"
+          class="list-item"
+          @click.native="toDetailPage(item)"
+        >
+          <ListItemMeta
+            :title="item.title"
+            :description="item.desc"
+          />
+        </ListItem>
+      </List>
+    </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
-
+import {homeList} from '@/data/home';
 export default {
   name: 'Home',
-  components: {
-    HelloWorld
+  data() {
+    return {
+      list: homeList
+    };
+  },
+  methods: {
+    toDetailPage(item) {
+      console.log(item);
+      if (item.url) {
+        this.$router.push(item.url);
+      }
+      
+    }
   }
-}
+};
 </script>
+<style scoped>
+.home{
+  padding: 16px;
+}
+.home-center{
+  width: 1200px;
+  margin: 0 auto;
+}
+.list-item{
+  cursor: pointer;
+}
+</style>

@@ -1,0 +1,25 @@
+/*
+ * @Description: 编辑器配置
+ * @Author: Dong Wei
+ * @Date: 2020-08-04 11:55:05
+ */
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "commonjs",
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": "./",
+        "paths": {
+            "@/*": [
+                "src/*"
+            ]
+        },
+        "experimentalDecorators": true
+    },
+    "exclude": [
+        "node_modules"
+    ],
+    "include": [
+        "src/**/*"
+    ]
+}
