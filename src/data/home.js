@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2020-12-19 16:45:59
  * @LastEditors: Dong Wei
- * @LastEditTime: 2020-12-21 14:24:36
+ * @LastEditTime: 2020-12-22 15:58:06
  * @FilePath: \vue2x-playground\src\data\home.js
  */
 
@@ -13,6 +13,6 @@ export const homeList = [
     createDate: '',
     LastEditDate: '',
     desc: '说明',
-    url: '/chartsClick'
+    url: 'chartsClick'
   }
 ];

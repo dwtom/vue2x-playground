@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2020-12-19 17:02:20
  * @LastEditors: Dong Wei
- * @LastEditTime: 2020-12-21 17:00:44
+ * @LastEditTime: 2020-12-22 16:29:12
  * @FilePath: \vue2x-playground\src\views\echarts\clickEvent.vue
 -->
 <template>
@@ -15,10 +15,19 @@
       @click="handleChartClick"
       @zr:click="handleZrClick"
     />
+    <Modal v-model="isModalShow" title="当前选中项">
+      <ul>
+        <li v-for="(item, index) in currentSelectedData" :key="index" class="list-item">
+          属性名: {{item.key}} <br>
+          属性值: {{item.value}}
+        </li>
+      </ul>
+    </Modal>
   </div>
 </template>
 
 <script>
+import * as tools from '@/utils/tools';
 export default {
   name: 'EchartsClick',
   data() {
@@ -55,7 +64,9 @@ export default {
             }
           ]
         }
-      }
+      },
+      isModalShow: false,
+      currentSelectedData: []
     };
   },
   methods: {
@@ -76,8 +87,8 @@ export default {
       }
       const dataArr = chart.getOption().series[0].data;
       // 当前选中项
-      const currentSelectedData = dataArr[xIndex];
-      console.log(currentSelectedData);
+      this.currentSelectedData = tools.ObjectToArray(dataArr[xIndex]);
+      this.isModalShow = true;
     }
   }
 };
@@ -86,5 +97,8 @@ export default {
 .echarts {
   width: 1000px;
   height: 500px;
+}
+.list-item{
+  margin-bottom: 12px;
 }
 </style>

@@ -11,10 +11,18 @@ const routes = [
     component: Home
   },
   {
-    path: '/chartsClick',
-    name: 'ChartsClick',
-    component: () => import(/* webpackChunkName: "ChartsClick" */ '@/views/echarts/ClickEvent')
+    name: 'NormalLayout',
+    path: '/article',
+    component: () => import(/* webpackChunkName: "NormalLayout" */ '@/layout/NormalLayout'),
+    children: [
+      {
+        path: 'chartsClick',
+        name: 'ChartsClick',
+        component: () => import(/* webpackChunkName: "ChartsClick" */ '@/views/echarts/ClickEvent')
+      }
+    ]
   }
+  
 ];
 
 const router = new VueRouter({

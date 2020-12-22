@@ -29,11 +29,14 @@ export default {
   },
   methods: {
     toDetailPage(item) {
-      console.log(item);
       if (item.url) {
-        this.$router.push(item.url);
+        this.$router.push({
+          path: `/article/${item.url}`,
+          query: {
+            title: item.title ?? ''
+          }
+        });
       }
-      
     }
   }
 };
