@@ -13,7 +13,7 @@ const routes = [
   {
     path: '/chartsClick',
     name: 'ChartsClick',
-    component: () => import(/* webpackChunkName: "ChartsClick" */ '@/views/echarts/clickEvent')
+    component: () => import(/* webpackChunkName: "ChartsClick" */ '@/views/echarts/ClickEvent')
   }
 ];
 
