@@ -40,6 +40,22 @@ module.exports = {
     'arrow-spacing': [2, { before: true, after: true }],
     // 如果代码块是单行的时候，代码块内部前后需要留一个空格
     'block-spacing': [2, 'always'],
+    // 关键字前后空格
+    'keyword-spacing': [
+      2,
+      {
+        before: true,
+        after: true
+      }
+    ],
+    // 大括号内不允许不必要的空格
+    'object-curly-spacing': [
+      2,
+      'always',
+      {
+        objectsInObjects: false
+      }
+    ],
     // 在定义对象或数组时，最后一项不能加逗号
     'comma-dangle': [2, 'never'],
     // 在写逗号时，逗号前面不需要加空格，而逗号后面需要添加空格
@@ -50,14 +66,6 @@ module.exports = {
       {
         beforeColon: false,
         afterColon: true
-      }
-    ],
-    // 关键字前后空格
-    'keyword-spacing': [
-      2,
-      {
-        before: true,
-        after: true
       }
     ],
     // 构造函数首字母大写

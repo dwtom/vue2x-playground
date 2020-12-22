@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2020-12-22 16:14:57
  * @LastEditors: Dong Wei
- * @LastEditTime: 2020-12-22 16:16:27
+ * @LastEditTime: 2020-12-22 16:35:54
  * @FilePath: \vue2x-playground\src\utils\tools.js
  */
 
@@ -25,11 +25,10 @@ export const getStringSlice = (str, length) => {
 /**
 * @description: 数字添加千分符
 * @param {Number|String} num
-* @param {Number} [fixed=2] 需要保留的小数位数,0为保留整数
+* @param {Number} [fixed=0] 需要保留的小数位数,默认保留整数
 * @return {String}
 */
-export const thousands = (num, fixed) => {
-  fixed = fixed ?? 2;
+export const getThousandsNum = (num, fixed = 0) => {
   if (typeof num !== 'number') num = Number(num);
   if (isNaN(num)) return '';
   num = num.toFixed(fixed).split('.');

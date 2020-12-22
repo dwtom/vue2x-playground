@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2020-12-19 17:02:20
  * @LastEditors: Dong Wei
- * @LastEditTime: 2020-12-22 16:29:12
+ * @LastEditTime: 2020-12-22 16:46:35
  * @FilePath: \vue2x-playground\src\views\echarts\clickEvent.vue
 -->
 <template>
@@ -15,9 +15,16 @@
       @click="handleChartClick"
       @zr:click="handleZrClick"
     />
-    <Modal v-model="isModalShow" title="当前选中项">
+    <Modal
+      v-model="isModalShow"
+      title="当前选中项"
+    >
       <ul>
-        <li v-for="(item, index) in currentSelectedData" :key="index" class="list-item">
+        <li
+          v-for="(item, index) in currentSelectedData"
+          :key="index"
+          class="list-item"
+        >
           属性名: {{item.key}} <br>
           属性值: {{item.value}}
         </li>

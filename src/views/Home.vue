@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import {homeList} from '@/data/home';
+import { homeList } from '@/data/home';
 export default {
   name: 'Home',
   data() {
