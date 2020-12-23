@@ -3,7 +3,7 @@ import App from './App.vue';
 import router from './router';
 
 // 全局样式
-import '@/style/index.js';
+import '@/style';
 
 // 插件
 import '@/plugins';

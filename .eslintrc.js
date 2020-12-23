@@ -10,6 +10,10 @@ module.exports = {
   parserOptions: {
     parser: 'babel-eslint'
   },
+  globals: {
+    '_JUHE_': false,
+    '_JUHEOLD_': false
+  },
   rules: {
     // 语句强制分号结尾
     semi: [2, 'always'],

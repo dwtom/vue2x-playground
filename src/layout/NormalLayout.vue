@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2020-12-22 15:51:31
  * @LastEditors: Dong Wei
- * @LastEditTime: 2020-12-22 16:10:20
+ * @LastEditTime: 2020-12-23 09:38:39
  * @FilePath: \vue2x-playground\src\layout\NormalLayout.vue
 -->
 <template>
@@ -41,7 +41,7 @@ export default {
 .top-bar{
   display: flex;
   align-items: center;
-  margin-top: 16px;
+  margin: 16px 0;
 }
 .title{
   margin-left: 12px;

@@ -19,6 +19,11 @@ const routes = [
         path: 'chartsClick',
         name: 'ChartsClick',
         component: () => import(/* webpackChunkName: "ChartsClick" */ '@/views/echarts/ClickEvent')
+      },
+      {
+        path: 'tabSwitch',
+        name: 'TabSwitch',
+        component: () => import(/* webpackChunkName: "TabSwitch" */ '@/views/axios/TabSwitch')
       }
     ]
   }

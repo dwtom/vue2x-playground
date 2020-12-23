@@ -13,9 +13,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Editor directories and files
+# Editor directories and files vscode配置需要同步
 .idea
-.vscode
+# .vscode
 *.suo
 *.ntvs*
 *.njsproj
