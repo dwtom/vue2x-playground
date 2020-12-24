@@ -24,6 +24,16 @@ const routes = [
         path: 'tabSwitch',
         name: 'TabSwitch',
         component: () => import(/* webpackChunkName: "TabSwitch" */ '@/views/axios/TabSwitch')
+      },
+      {
+        path: 'tableCombine',
+        name: 'TableCombine',
+        component: () => import(/* webpackChunkName: "TableCombine" */ '@/views/iview/TableCombine')
+      },
+      {
+        path: 'dragreRelationship',
+        name: 'DragreRelationship',
+        component: () => import(/* webpackChunkName: "DragreRelationship" */ '@/views/g6/DragreRelationship')
       }
     ]
   }
