@@ -34,10 +34,20 @@ const routes = [
         path: 'dragreRelationship',
         name: 'DragreRelationship',
         component: () => import(/* webpackChunkName: "DragreRelationship" */ '@/views/g6/DragreRelationship')
+      },
+      {
+        path: 'cssGrid',
+        name: 'CssGrid',
+        component: () => import(/* webpackChunkName: "CssGrid" */ '@/views/css/Grid')
+      },
+      {
+        path: 'ellipsis',
+        name: 'Ellipsis',
+        component: () => import(/* webpackChunkName: "Ellipsis" */ '@/views/css/Ellipsis')
       }
     ]
   }
-  
+
 ];
 
 const router = new VueRouter({

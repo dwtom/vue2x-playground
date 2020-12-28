@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2020-12-19 16:45:59
  * @LastEditors: Dong Wei
- * @LastEditTime: 2020-12-24 10:42:36
+ * @LastEditTime: 2020-12-28 10:20:25
  * @FilePath: \vue2x-playground\src\data\home.js
  */
 
@@ -35,5 +35,19 @@ export const homeList = [
     LastEditDate: '',
     desc: '使用antv/g6的dagre布局，隐藏部分节点后对剩下的节点进行关系的重新计算，节点间的新关系需要所有的排列组合',
     url: 'dragreRelationship'
+  },
+  {
+    title: 'grid布局学习',
+    createDate: '2020-12-24',
+    LastEditDate: '',
+    desc: '',
+    url: 'cssGrid'
+  },
+  {
+    title: '动态设置n行文本末尾省略号',
+    createDate: '2020-12-25',
+    LastEditDate: '',
+    desc: '利用clamp.js实现',
+    url: 'ellipsis'
   }
 ];

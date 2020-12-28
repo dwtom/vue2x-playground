@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2020-12-23 09:30:44
  * @LastEditors: Dong Wei
- * @LastEditTime: 2020-12-23 15:44:00
+ * @LastEditTime: 2020-12-24 15:23:29
  * @FilePath: \vue2x-playground\src\views\axios\TabSwitch.vue
 -->
 <template>
@@ -13,13 +13,19 @@
         label="天气预报"
         name="weatherForecast"
       >
-        <TabSwitchOne :weather="realtimeWeather" :status="status" />
+        <TabSwitchOne
+          :weather="realtimeWeather"
+          :status="status"
+        />
       </TabPane>
       <TabPane
         label="头条新闻列表"
         name="news"
       >
-        <TabSwitchTwo :list="newsList" :status="status" />
+        <TabSwitchTwo
+          :list="newsList"
+          :status="status"
+        />
       </TabPane>
       <TabPane
         label="标签三"
