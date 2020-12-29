@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2020-12-19 16:45:59
  * @LastEditors: Dong Wei
- * @LastEditTime: 2020-12-28 10:20:25
+ * @LastEditTime: 2020-12-29 14:21:42
  * @FilePath: \vue2x-playground\src\data\home.js
  */
 
@@ -49,5 +49,12 @@ export const homeList = [
     LastEditDate: '',
     desc: '利用clamp.js实现',
     url: 'ellipsis'
+  },
+  {
+    title: 'fetch学习',
+    createDate: '2020-12-28',
+    LastEditDate: '',
+    desc: 'fetch基本用法以及取消请求',
+    url: 'learnFetch'
   }
 ];

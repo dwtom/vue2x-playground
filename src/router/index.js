@@ -44,6 +44,11 @@ const routes = [
         path: 'ellipsis',
         name: 'Ellipsis',
         component: () => import(/* webpackChunkName: "Ellipsis" */ '@/views/css/Ellipsis')
+      },
+      {
+        path: 'learnFetch',
+        name: 'LearnFetch',
+        component: () => import(/* webpackChunkName: "LearnFetch" */ '@/views/fetch/BaseFetch')
       }
     ]
   }

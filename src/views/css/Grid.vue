@@ -3,16 +3,16 @@
  * @Author: Dong Wei
  * @Date: 2020-12-24 14:47:38
  * @LastEditors: Dong Wei
- * @LastEditTime: 2020-12-24 15:59:13
+ * @LastEditTime: 2020-12-28 15:36:36
  * @FilePath: \vue2x-playground\src\views\css\Grid.vue
 -->
 <template>
   <Tabs value="tab1">
     <TabPane
-      label="常规布局"
+      label="圣杯布局"
       name="tab1"
     >
-      <div class="wrap">
+      <div class="tab1-wrap">
         <div class="left"></div>
         <div class="center"></div>
         <div class="right"></div>
@@ -20,7 +20,7 @@
     </TabPane>
     <!-- 实现类似flex的常规布局 -->
     <TabPane
-      label="局部布局"
+      label="常规布局"
       name="tab2"
     >
       <ul class="flex-to-grid">
@@ -43,6 +43,7 @@
           v-for="(item, index) in gridarrs"
           :key="index"
           span="6"
+          class="icol-item"
         >
           {{item}}
         </i-col>
@@ -63,9 +64,12 @@ export default {
 };
 </script>
 <style scoped lang="less">
-.wrap{
+.tab1-wrap{
   display: grid;
   grid-template-columns: 100px auto 100px;
+  &:nth-child(n) {
+    height: 100%
+  }
 }
 .left{
   background-color: navy;
@@ -88,5 +92,14 @@ export default {
   align-items: center;
   height: 100px;
   border: 1px solid #000;
+}
+.icol-item{
+  height: 200px;
+  // border: 1px solid #000;
+  background: steelblue;
+  margin-bottom: 12px;
+  &:not(:last-of-type) {
+    margin-right: 12px;
+  }
 }
 </style>
