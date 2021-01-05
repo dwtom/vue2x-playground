@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2020-12-25 11:11:42
  * @LastEditors: Dong Wei
- * @LastEditTime: 2020-12-28 15:08:38
+ * @LastEditTime: 2021-01-05 16:41:36
  * @FilePath: \vue2x-playground\src\views\css\Ellipsis.vue
 -->
 <template>
@@ -24,7 +24,7 @@ export default {
   name: 'Ellipsis',
   data() {
     return {
-      wordsNum: '123456789012', // 12
+      wordsNum: '123456789012', // 12---100px宽时正好显示完整的字符串长度
       wordsLowerLetters: 'abcdefgabcdef', // 13
       wordsUpperLetters: 'ABCDEFGHIJK', // 11
       wordsChinese: '任董事长及首席', // 7

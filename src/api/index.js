@@ -3,14 +3,14 @@
  * @Author: Dong Wei
  * @Date: 2020-12-23 09:47:57
  * @LastEditors: Dong Wei
- * @LastEditTime: 2020-12-23 16:19:07
+ * @LastEditTime: 2021-01-05 15:01:50
  * @FilePath: \vue2x-playground\src\api\index.js
  */
 import axios from 'axios';
 
 // 取消请求
 const CancelToken = axios.CancelToken;
-let cancelRequest;
+let cancelRequest; // 理论上说应该每个cancel方法对应一个axios请求，只有CancelToken可以共用，但是当前场景每一个tab只有一个接口请求所以没有写那么麻烦
 
 // tab栏切换用
 // 测试地址 https://www.juhe.cn/box/index/id/235
@@ -24,7 +24,7 @@ export function getTopNewsData(data) {
   return axios({
     url: `${_JUHE_}/toutiao/index`,
     method: 'get',
-    params, 
+    params,
     cancelToken: new CancelToken(function executor(c) {
       // executor 函数接收一个 cancel 函数作为参数
       cancelRequest = c;
@@ -43,7 +43,7 @@ export function getWeaterForcastData(data) {
   return axios({
     url: `${_JUHEOLD_}/simpleWeather/query`,
     method: 'get',
-    params, 
+    params,
     cancelToken: new CancelToken(function executor(c) {
       // executor 函数接收一个 cancel 函数作为参数
       cancelRequest = c;
