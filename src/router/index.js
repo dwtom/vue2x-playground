@@ -21,6 +21,11 @@ const routes = [
         component: () => import(/* webpackChunkName: "ChartsClick" */ '@/views/echarts/ClickEvent')
       },
       {
+        path: 'chartsGauge',
+        name: 'ChartsGauge',
+        component: () => import(/* webpackChunkName: "ChartsGauge" */ '@/views/echarts/Gauge')
+      },
+      {
         path: 'tabSwitch',
         name: 'TabSwitch',
         component: () => import(/* webpackChunkName: "TabSwitch" */ '@/views/axios/TabSwitch')
@@ -29,6 +34,11 @@ const routes = [
         path: 'tableCombine',
         name: 'TableCombine',
         component: () => import(/* webpackChunkName: "TableCombine" */ '@/views/iview/TableCombine')
+      },
+      {
+        path: 'tableExpand',
+        name: 'TableExpand',
+        component: () => import(/* webpackChunkName: "TableExpand" */ '@/views/iview/TableExpand')
       },
       {
         path: 'dragreRelationship',

@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2020-12-19 16:45:59
  * @LastEditors: Dong Wei
- * @LastEditTime: 2020-12-29 14:21:42
+ * @LastEditTime: 2021-02-23 10:25:37
  * @FilePath: \vue2x-playground\src\data\home.js
  */
 
@@ -56,5 +56,19 @@ export const homeList = [
     LastEditDate: '',
     desc: 'fetch基本用法以及取消请求',
     url: 'learnFetch'
+  },
+  {
+    title: 'echarts自定义样式仪表盘',
+    createDate: '2021-01-07',
+    LastEditDate: '',
+    desc: '',
+    url: 'chartsGauge'
+  },
+  {
+    title: 'iview表格内容展开',
+    createDate: '2021-02-23',
+    LastEditDate: '',
+    desc: '展开的内容通过组件引入',
+    url: 'tableExpand'
   }
 ];

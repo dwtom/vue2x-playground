@@ -1,28 +1,28 @@
 <!--
- * @Description: filename
+ * @Description: iview表格内容合并
  * @Author: Dong Wei
  * @Date: 2020-12-24 09:53:58
  * @LastEditors: Dong Wei
- * @LastEditTime: 2020-12-24 10:07:59
+ * @LastEditTime: 2021-02-23 10:04:04
  * @FilePath: \vue2x-playground\src\views\iview\TableCombine.vue
 -->
 <template>
-    <div>
-      <Table
-        :columns="columns"
-        :data="tableData3"
-        class="table"
-        width="1000"
-        border
-        :span-method="handleSpan"
-      >
-        <template slot="action">
-          <a>编辑</a>
-            <Divider type="vertical" />
-          <a>删除</a>
-        </template>
-      </Table>
-    </div>
+  <div>
+    <Table
+      :columns="columns"
+      :data="tableData3"
+      class="table"
+      width="1000"
+      border
+      :span-method="handleSpan"
+    >
+      <template slot="action">
+        <a>编辑</a>
+        <Divider type="vertical" />
+        <a>删除</a>
+      </template>
+    </Table>
+  </div>
 </template>
 
 <script>

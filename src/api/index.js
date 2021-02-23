@@ -3,12 +3,14 @@
  * @Author: Dong Wei
  * @Date: 2020-12-23 09:47:57
  * @LastEditors: Dong Wei
- * @LastEditTime: 2021-01-05 15:01:50
+ * @LastEditTime: 2021-01-19 13:47:24
  * @FilePath: \vue2x-playground\src\api\index.js
  */
 import axios from 'axios';
 
 // 取消请求
+// ！！Cancel Token 将逐步退出历史舞台，推荐使用 AbortController 来实现请求中止。axios貌似不支持
+// https://github.com/umijs/umi-request/blob/master/README_zh-CN.md
 const CancelToken = axios.CancelToken;
 let cancelRequest; // 理论上说应该每个cancel方法对应一个axios请求，只有CancelToken可以共用，但是当前场景每一个tab只有一个接口请求所以没有写那么麻烦
 
