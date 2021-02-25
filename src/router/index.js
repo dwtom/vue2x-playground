@@ -59,6 +59,11 @@ const routes = [
         path: 'learnFetch',
         name: 'LearnFetch',
         component: () => import(/* webpackChunkName: "LearnFetch" */ '@/views/fetch/BaseFetch')
+      },
+      {
+        path: 'fund',
+        name: 'Fund',
+        component: () => import(/* webpackChunkName: "Fund" */ '@/views/finance/Fund')
       }
     ]
   }

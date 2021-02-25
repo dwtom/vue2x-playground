@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2020-12-19 16:45:59
  * @LastEditors: Dong Wei
- * @LastEditTime: 2021-02-23 10:25:37
+ * @LastEditTime: 2021-02-25 16:14:09
  * @FilePath: \vue2x-playground\src\data\home.js
  */
 
@@ -70,5 +70,12 @@ export const homeList = [
     LastEditDate: '',
     desc: '展开的内容通过组件引入',
     url: 'tableExpand'
+  },
+  {
+    title: 'test',
+    createDate: '2021-02-25',
+    LastEditDate: '',
+    desc: '',
+    url: 'fund'
   }
 ];

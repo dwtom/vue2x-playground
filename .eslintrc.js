@@ -12,7 +12,8 @@ module.exports = {
   },
   globals: {
     '_JUHE_': false,
-    '_JUHEOLD_': false
+    '_JUHEOLD_': false,
+    '_FINANCEPATH_': false
   },
   rules: {
     // 语句强制分号结尾
