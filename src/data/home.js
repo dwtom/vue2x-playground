@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2020-12-19 16:45:59
  * @LastEditors: Dong Wei
- * @LastEditTime: 2021-02-25 16:14:09
+ * @LastEditTime: 2021-03-04 17:18:08
  * @FilePath: \vue2x-playground\src\data\home.js
  */
 
@@ -72,10 +72,10 @@ export const homeList = [
     url: 'tableExpand'
   },
   {
-    title: 'test',
-    createDate: '2021-02-25',
+    title: 'dom元素拖拽缩放加canvas连线',
+    createDate: '2021-03-04',
     LastEditDate: '',
-    desc: '',
-    url: 'fund'
+    desc: '基于vue-grid-layout',
+    url: 'draggableContent'
   }
 ];

@@ -30,13 +30,6 @@ module.exports = {
         pathRewrite: {
           '^/oldjuhe': ''
         }
-      },
-      '/doctorxiong': {
-        target: 'https://api.doctorxiong.club',
-        changOrigin: true,
-        pathRewrite: {
-          '^/doctorxiong': ''
-        }
       }
     }
   },
@@ -47,14 +40,12 @@ module.exports = {
       config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true;
       plugins.push(new webpack.DefinePlugin({
         '_JUHE_': JSON.stringify('http://v.juhe.cn'), // 需要服务端进行相关配置
-        '_JUHEOLD_': JSON.stringify('http://apis.juhe.cn'),
-        '_FINANCEPATH_': JSON.stringify('https://api.doctorxiong.club')
+        '_JUHEOLD_': JSON.stringify('http://apis.juhe.cn')
       }));
     } else {
       plugins.push(new webpack.DefinePlugin({
         '_JUHE_': JSON.stringify('/juhe'),
-        '_JUHEOLD_': JSON.stringify('/oldjuhe'),
-        '_FINANCEPATH_': JSON.stringify('/doctorxiong')
+        '_JUHEOLD_': JSON.stringify('/oldjuhe')
       }));
     }
     config.plugins = [...config.plugins, ...plugins];
