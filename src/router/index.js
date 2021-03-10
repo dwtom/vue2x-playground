@@ -63,7 +63,17 @@ const routes = [
       {
         path: 'draggableContent',
         name: 'DraggableContent',
-        component: () => import(/* webpackChunkName: "LearnFetch" */ '@/views/draggable/DragAndLine')
+        component: () => import(/* webpackChunkName: "draggable" */ '@/views/draggable/DragAndLine')
+      },
+      {
+        path: 'draggableContentByFabric',
+        name: 'DraggableContentByFabric',
+        component: () => import(/* webpackChunkName: "draggable" */ '@/views/draggable/DragAndLineNew')
+      },
+      {
+        path: 'draggableTest',
+        name: 'DraggableTest',
+        component: () => import(/* webpackChunkName: "draggable" */ '@/views/draggable/DragTest')
       }
     ]
   }

@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2020-12-19 16:45:59
  * @LastEditors: Dong Wei
- * @LastEditTime: 2021-03-04 17:18:08
+ * @LastEditTime: 2021-03-09 19:44:18
  * @FilePath: \vue2x-playground\src\data\home.js
  */
 
@@ -77,5 +77,19 @@ export const homeList = [
     LastEditDate: '',
     desc: '基于vue-grid-layout',
     url: 'draggableContent'
+  },
+  {
+    title: 'dom元素拖拽缩放加canvas连线（fabric.js实现）',
+    createDate: '2021-03-09',
+    LastEditDate: '',
+    desc: 'canvas使用fabric.js',
+    url: 'draggableContentByFabric'
+  },
+  {
+    title: 'vue-grid-layout测试',
+    createDate: '2021-03-09',
+    LastEditDate: '',
+    desc: 'vue-grid-layout测试',
+    url: 'draggableTest'
   }
 ];
