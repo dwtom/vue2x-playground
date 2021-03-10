@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2021-03-04 14:44:17
  * @LastEditors: Dong Wei
- * @LastEditTime: 2021-03-09 19:42:38
+ * @LastEditTime: 2021-03-10 16:32:40
  * @FilePath: \vue2x-playground\src\views\draggable\dragAndLine.vue
 -->
 <template>
@@ -295,7 +295,7 @@ export default {
     z-index: 2;
   }
   .grid-layout{
-    // height: 100%!important;
+    height: 100%!important;
   }
   ::v-deep .vue-grid-item{
     padding: 12px;

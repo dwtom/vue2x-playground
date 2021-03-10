@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2021-03-04 14:44:17
  * @LastEditors: Dong Wei
- * @LastEditTime: 2021-03-10 11:28:41
+ * @LastEditTime: 2021-03-10 19:34:06
  * @FilePath: \vue2x-playground\src\views\draggable\DragAndLineNew.vue
 -->
 <template>
@@ -15,6 +15,13 @@
       @click="endDrawLine"
       @keydown="handleKeyDown"
     >
+      <!-- 点击线条弹出的菜单 -->
+      <div
+        class="menu"
+        id="canvasMenu"
+        v-show="isMenuShow"
+        @click="handleLineDelete"
+      >删除</div>
       <!-- 人体图 -->
       <!-- <div class="body-bg">人体图</div> -->
       <canvas id="canvasPart"></canvas>
@@ -42,7 +49,7 @@
           :is-resizable="item.isResizable"
           :data-id="item.i"
           @move="handleGridItemMove"
-          @moved="handleGridItemMoved"
+          @resize="handleGridItemResize"
         >
           <div
             class="grid-item-inner"
@@ -54,7 +61,7 @@
             ></div>
             <div
               class="circle circle-right"
-              @click.stop="startDrawLine( $event,item, 'right')"
+              @click.stop="startDrawLine($event, item, 'right')"
             ></div>
             编号{{item.i}}
           </div>
@@ -98,24 +105,26 @@ export default {
       ],
       fabricObj: null, // fabric对象
       drawingObj: null, // 正在绘制的fabric对象
+      deleteObj: null, // 将要删除的fabric对象(线)
       ctx: null, // canvas2d对象TODO:是否无用
       canvasBox: { // 用于计算点击处的坐标TODO:
         left: 0,
         top: 0
       },
-      customLines: [], // 保存所有用户自定义画线（start/end: 坐标;lineObj: fabric对象）
+      customLines: [], // 保存所有用户自定义画线（start/end: 坐标;lineObj: fabric对象, type: 左侧/右侧）
       tempCoordinate: {}, // 保存当前绘制的线段坐标
-      isStart: false // 是否开始画线
+      isDrawingLine: false, // 是否开始画线
+      isMenuShow: false // 删除菜单
     };
   },
   mounted() {
     this.setCanvasStyle();
-    this.initRectClickCoordinate();
+    this.initRectCircleCoordinate();
     this.setFabric();
   },
   methods: {
     // 设置矩形左右两侧点击区的中心点坐标
-    initRectClickCoordinate() {
+    initRectCircleCoordinate() {
       this.layoutData.forEach(v => {
         const leftCircle = this.calcRectCircleCoord(v).left;
         const rightCircle = this.calcRectCircleCoord(v).right;
@@ -136,13 +145,12 @@ export default {
     // 设置fabric对象并监听事件
     setFabric() {
       this.fabricObj = new Fabric.fabric.Canvas('canvasPart', {
-        selectable: false, // 禁止元素出现被选中的样式
-        selection: false,
-        skipTargetFind: true
+        selection: false, // 不可框选
+        skipTargetFind: false // 保留选中操作(在Line中去掉选中样式)
       });
       // 开始画线时，鼠标移动执行重绘
       this.fabricObj.on('mouse:move', e => {
-        if (this.isStart) {
+        if (this.isDrawingLine) {
           // 清空上一次画的线
           if (this.drawingObj) {
             this.fabricObj.remove(this.drawingObj);
@@ -155,31 +163,46 @@ export default {
           Object.assign(this.tempCoordinate, { end: [x2, y2] });
         }
       });
-    },
-    // 计算矩形左右点击区的中心坐标 FIXME:y坐标拖动后的值不正确
-    calcRectCircleCoord(item) {
-      const { colWidth, rowHeight } = this.gridConfig;
-      let leftX = 10 + item.x * colWidth;
-      let rightX = 10 + item.x * colWidth + item.w * colWidth;
-      if (item.x > 0) {
-        leftX += 10 * item.x;
-        rightX += 10 * item.x;
-      }
-      // margin为10,微调
-      let y = 12 + item.y * rowHeight + item.h * rowHeight - item.h * rowHeight / 2;
-      if (item.y > 0){
-        y += 10 * item.y;
-      }
-      return {
-        left: [leftX, y],
-        right: [rightX, y]
-      };
+      // 监听点击选中
+      this.fabricObj.on('mouse:down', option => {
+        // 画线结束时点击不作选中操作
+        if (this.isDrawingLine) {
+          return;
+        }
+        // 点击线-打开菜单
+        // 点击其它地方关闭菜单保留线
+        // 已经打开菜单的情况下再次点击线则关闭菜单
+        if (option.target) {
+          const type = option.target.get('type');
+          if (type === 'line') {
+            if (this.isMenuShow) {
+              this.isMenuShow = false;
+              this.deleteObj = null;
+              return;
+            }
+            this.deleteObj = option.target;
+            const { x, y } = option.pointer;
+            const type = option.target.customType;
+            let top, left;
+            if (type === 'left') {
+              left = x - 50 + 'px';
+            } else {
+              left = x + 10 + 'px';
+            }
+            top = y - 30 + 'px';
+            this.drawMenu(left, top);
+          }
+        } else { 
+          this.deleteObj = null;
+          this.isMenuShow = false;
+        }
+      });
     },
     // 点击圆圈开始画线
     startDrawLine(e, item, type) {
       this.drawingObj = null;
       this.focusLayout();
-      this.isStart = true;
+      this.isDrawingLine = true;
       let x, y;
       if (type === 'left') {
         x = item.leftCircle[0];
@@ -189,11 +212,11 @@ export default {
         y = item.rightCircle[1];
       }
       Object.assign(item, { hasLine: true });
-      Object.assign(this.tempCoordinate, { i: item.i, start: [x, y] });
+      Object.assign(this.tempCoordinate, { i: item.i, start: [x, y], guid: this.setGuid(), type });
     },
     // 结束画线
     endDrawLine(e) {
-      if (!this.isStart){
+      if (!this.isDrawingLine){
         return;
       }
       // 只处理点击到画布上的线
@@ -214,29 +237,67 @@ export default {
     // 处理拖动
     handleGridItemMove(i, newX, newY){
       const currentRect = this.layoutData.filter(v => v.i == i)[0];
-      // 重新计算左右圆圈坐标
+      // 复制并更新矩形属性
       const tempRect = _.cloneDeep(currentRect);
       tempRect.x = newX;
       tempRect.y = newY;
+      this.handleGridItemChange(tempRect, currentRect);
+    },
+    // 处理调整大小
+    handleGridItemResize(i, newH, newW) {
+      const currentRect = this.layoutData.filter(v => v.i == i)[0];
+      // 复制并更新矩形属性
+      const tempRect = _.cloneDeep(currentRect);
+      tempRect.w = newW;
+      tempRect.h = newH;
+      this.handleGridItemChange(tempRect, currentRect);
+    },
+    // 计算矩形左右点击区的中心坐标
+    calcRectCircleCoord(item) {
+      const { colWidth, rowHeight } = this.gridConfig;
+      // margin为10,微调
+      let leftX = 10 + item.x * colWidth;
+      let rightX = 10 + item.x * colWidth + item.w * colWidth + (item.w - 1) * 10;
+      if (item.x > 0) {
+        leftX += 10 * item.x;
+        rightX += 10 * item.x;
+      }
+      let y = 10 + item.y * rowHeight + (item.h * rowHeight + (item.h - 1) * 10) / 2;
+      if (item.y > 0){
+        y += 10 * item.y;
+      }
+      return {
+        left: [leftX, y],
+        right: [rightX, y]
+      };
+    },
+    /**
+     * @description: 拖动和调整大小时重新计算矩形属性以及重绘直线
+     * @param {*} tempRect 当前矩形副本
+     * @param {*} currentRect 当前矩形实际数据
+     * @return {*}
+     */
+    handleGridItemChange(tempRect, currentRect) {
+      // 重新计算左右圆圈坐标
       const newLeft = this.calcRectCircleCoord(tempRect).left;
       const newRight = this.calcRectCircleCoord(tempRect).right;
       // 矩形有画线则执行重绘
       if (tempRect.hasLine) {
-        const { leftCircle, rightCircle } = tempRect;
+        const { i, leftCircle, rightCircle } = tempRect;
         for (const item of this.customLines) {
           if (item.i !== i) {
             continue;
           }
           if (_.isEqual(leftCircle, item.start)) {
             this.fabricObj.remove(item.lineObj);
-            this.drawLine(newLeft, item.end, '#FAAB0C');
+            this.drawLine(newLeft, item.end, '#FAAB0C', item.guid);
             // 更新保存线段的数组对应项
             item.start = newLeft;
             item.lineObj = this.drawingObj;
           }
           if (_.isEqual(rightCircle, item.start)) {
             this.fabricObj.remove(item.lineObj);
-            this.drawLine(newRight, item.end, '#FAAB0C');
+            this.drawLine(newRight, item.end, '#FAAB0C', item.guid);
             // 更新保存线段的数组对应项
             item.start = newRight;
             item.lineObj = this.drawingObj;
@@ -246,33 +307,67 @@ export default {
       // 更新矩形坐标
       Object.assign(currentRect, { leftCircle: newLeft, rightCircle: newRight });
     },
-    handleGridItemMoved(i, newX, newY) {
-      // console.log(newY);
-      // this.handleGridItemMove(i, newX, newY)
-      // const currentRect = this.layoutData.filter(v => v.i == i)[0];
-      // const newRight = this.calcRectCircleCoord(currentRect).right;
-    },
     /**
      * @description: 根据已知点画线
      * @param {array} start 起点坐标
      * @param {array} end
      * @param {string} strokeColor 描边颜色
+     * @param {string} guid 已有边的guid(拖拽时用)
+     * @param {string} type 已有边的方向 'left'or'right'
      * @return {*}
      */
-    drawLine(start, end, strokeColor) {
+    drawLine(start, end, strokeColor, guid, type) {
       const x1 = start[0];
       const y1 = start[1];
       const x2 = end[0];
       const y2 = end[1];
       const line = new Fabric.fabric.Line([x1, y1, x2, y2], {
-        stroke: strokeColor
+        stroke: strokeColor,
+        hoverCursor: 'default',
+        selectable: false // 去掉选中的效果
       });
+      // 添加自定义属性方便删除操作
+      const customId = guid ? guid : this.tempCoordinate.guid;
+      const customType = type ? type : this.tempCoordinate.type;
+      Object.assign(line, { customId, customType });
       this.drawingObj = line;
       this.fabricObj.add(line);
     },
+    // 执行删除
+    handleLineDelete() {
+      if (!this.deleteObj){
+        return;
+      }
+      const guid = this.deleteObj.customId;
+      // 删除保存的数组中对应的线
+      const ind = this.customLines.findIndex(v => v.guid === guid);
+      this.customLines.splice(ind, 1);
+      // 检查griditem状态
+      for (const item of this.layoutData) {
+        let flag = false;
+        for (const line of this.customLines) {
+          if (line.i === item.i){
+            flag = true;
+            break;
+          }
+        }
+        item.hasLine = flag;
+      }
+      // 删除线
+      this.fabricObj.remove(this.deleteObj);
+      this.isMenuShow = false;
+      this.deleteObj = null;
+    },
+    // 点击线展示操作菜单
+    drawMenu(left, top) {
+      const menu = document.getElementById('canvasMenu');
+      menu.style.top = top;
+      menu.style.left = left;
+      this.isMenuShow = true;
+    },
     // 重置画线状态
     resetDrawStatus() {
-      this.isStart = false;
+      this.isDrawingLine = false;
       this.drawingObj = null;
       this.tempCoordinate = {};
     },
@@ -290,6 +385,14 @@ export default {
         this.fabricObj.remove(this.drawingObj);
         this.resetDrawStatus();
       }
+    },
+    // 生成guid
+    setGuid() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = Math.random() * 16 | 0,
+          v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
     }
   }
 };
@@ -307,6 +410,18 @@ export default {
   &:focus{
     outline: none;
   }
+  .menu {
+    position: absolute;
+    width: 60px;
+    height: 25px;
+    line-height: 25px;
+    border-radius: 2px;
+    border: 1px solid #D0D9D9;
+    cursor: pointer;
+    z-index: 100;
+    background: #fff;
+    text-align: center;
+  }
   // background-color: #ccc;
   ::v-deep .canvas-container{
     position: absolute!important;
@@ -322,16 +437,6 @@ export default {
     height: 100%;
     // background-color: skyblue;
     border: 1px solid #000;
-  }
-  .body-bg{
-    position: absolute;
-    top: 0;
-    left: 50%;
-    height: 100%;
-    width: 200px;
-    transform: translateX(-50%);
-    border: 1px solid #000;
-    z-index: 2;
   }
   .grid-layout{
     height: 100%!important;
