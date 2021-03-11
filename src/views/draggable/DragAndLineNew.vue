@@ -3,12 +3,14 @@
  * @Author: Dong Wei
  * @Date: 2021-03-04 14:44:17
  * @LastEditors: Dong Wei
- * @LastEditTime: 2021-03-10 19:34:06
+ * @LastEditTime: 2021-03-11 18:26:44
  * @FilePath: \vue2x-playground\src\views\draggable\DragAndLineNew.vue
 -->
 <template>
   <div class="wrap">
-    <!-- <Button @click="setEditStatus">{{drawBtnWord}}</Button> -->
+    <Button @click="lockDrag">锁定位置</Button>
+    <Button @click="lockResize">锁定尺寸</Button>
+    <p>点选模块，位置可拖动调整，大小可通过拉伸边界来调整；模块侧边框连接点可拖拉连线至人体图任意部位。</p>
     <div
       class="canvas-layout"
       id="canvasLayout"
@@ -23,7 +25,7 @@
         @click="handleLineDelete"
       >删除</div>
       <!-- 人体图 -->
-      <!-- <div class="body-bg">人体图</div> -->
+
       <canvas id="canvasPart"></canvas>
       <GridLayout
         class="grid-layout"
@@ -53,14 +55,18 @@
         >
           <div
             class="grid-item-inner"
+            :class="{'grid-item-selected': item.selected}"
             :data-id="item.i"
+            @mousedown="handleGridItemSelected(item)"
           >
             <div
               class="circle circle-left"
+              :class="{'grid-item-selected': item.selected}"
               @click.stop="startDrawLine($event, item, 'left')"
             ></div>
             <div
               class="circle circle-right"
+              :class="{'grid-item-selected': item.selected}"
               @click.stop="startDrawLine($event, item, 'right')"
             ></div>
             编号{{item.i}}
@@ -68,6 +74,12 @@
         </GridItem>
       </GridLayout>
     </div>
+    <img
+      v-show="false"
+      id="bodyImg"
+      src="@/assets/imgs/body.png"
+      alt=""
+    />
   </div>
 </template>
 
@@ -106,11 +118,6 @@ export default {
       fabricObj: null, // fabric对象
       drawingObj: null, // 正在绘制的fabric对象
       deleteObj: null, // 将要删除的fabric对象(线)
-      ctx: null, // canvas2d对象TODO:是否无用
-      canvasBox: { // 用于计算点击处的坐标TODO:
-        left: 0,
-        top: 0
-      },
       customLines: [], // 保存所有用户自定义画线（start/end: 坐标;lineObj: fabric对象, type: 左侧/右侧）
       tempCoordinate: {}, // 保存当前绘制的线段坐标
       isDrawingLine: false, // 是否开始画线
@@ -121,6 +128,7 @@ export default {
     this.setCanvasStyle();
     this.initRectCircleCoordinate();
     this.setFabric();
+    this.drawBodyImg();
   },
   methods: {
     // 设置矩形左右两侧点击区的中心点坐标
@@ -134,8 +142,6 @@ export default {
     // 设置画布宽高并获取一些初始值
     setCanvasStyle() {
       const canvasDOM = document.getElementById('canvasPart');
-      this.ctx = canvasDOM.getContext('2d');
-      this.canvasBox = canvasDOM.getBoundingClientRect();
       const width = canvasDOM.offsetWidth;
       const height = canvasDOM.offsetHeight;
       canvasDOM.width = width;
@@ -159,7 +165,7 @@ export default {
           const y1 = this.tempCoordinate.start[1];
           const x2 = e.pointer.x;
           const y2 = e.pointer.y;
-          this.drawLine([x1, y1], [x2, y2], '#FAAB0C');
+          this.drawCurve([x1, y1], [x2, y2], '#FAAB0C', this.tempCoordinate.type);
           Object.assign(this.tempCoordinate, { end: [x2, y2] });
         }
       });
@@ -196,6 +202,62 @@ export default {
           this.deleteObj = null;
           this.isMenuShow = false;
         }
+      });
+    },
+    // 绘制人体背景图
+    drawBodyImg() {
+      const imgDOM = document.getElementById('bodyImg');
+      const canvasDOM = document.getElementById('canvasPart');
+      const imgHeightOrigin = 497; // 图片原始尺寸
+      const imgWidthOrigin = 186;
+      const boxHeight = canvasDOM.height;
+      const boxWidth = canvasDOM.width;
+      const left = boxWidth / 2 - imgWidthOrigin / 2; // 横向缩放较小不考虑
+      const rate = boxHeight / (imgHeightOrigin + boxHeight * 0.2); // 预留边距
+      const top = Math.abs(boxHeight - imgHeightOrigin * rate) / 2;
+      // 即使是已经存在于html中的imgdom对象也需要在onload事件中获取，否则fabric渲染不出来
+      imgDOM.onload = () => {
+        const imgInstance = new Fabric.fabric.Image(imgDOM, {
+          selectable: false, // 去掉选中的效果
+          hasControls: false, // 关闭图层控件
+          hoverCursor: 'default',
+          left,
+          top,
+          scaleX: rate,
+          scaleY: rate
+        });
+        this.fabricObj.add(imgInstance);
+      };
+    },
+    // 锁定位置
+    lockDrag() {
+      this.gridConfig.isDraggable = !this.gridConfig.isDraggable;
+    },
+    // 锁定尺寸
+    lockResize() {
+      this.gridConfig.isResizable = !this.gridConfig.isResizable;
+    },
+    // 点到矩形改变样式
+    handleGridItemSelected(item) {
+      // 改变矩形本身边框颜色
+      this.layoutData.forEach(v => {
+        if (v.i === item.i) {
+          Object.assign(v, { selected: true });
+        } else {
+          Object.assign(v, { selected: false });
+        }
+      });
+      this.$forceUpdate();
+      // 改变线的颜色
+      this.customLines.forEach(line => {
+        const { start, end, guid, type } = line;
+        this.fabricObj.remove(line.lineObj);
+        if (line.i === item.i) {
+          this.drawCurve(start, end, '#FAAB0C', type, guid);
+        } else {
+          this.drawCurve(start, end, '#768C8C', type, guid);
+        }
+        line.lineObj = this.drawingObj;
       });
     },
     // 点击圆圈开始画线
@@ -255,7 +317,6 @@ export default {
     // 计算矩形左右点击区的中心坐标
     calcRectCircleCoord(item) {
       const { colWidth, rowHeight } = this.gridConfig;
-      // margin为10,微调
       let leftX = 10 + item.x * colWidth;
       let rightX = 10 + item.x * colWidth + item.w * colWidth + (item.w - 1) * 10;
       if (item.x > 0) {
@@ -290,14 +351,14 @@ export default {
           }
           if (_.isEqual(leftCircle, item.start)) {
             this.fabricObj.remove(item.lineObj);
-            this.drawLine(newLeft, item.end, '#FAAB0C', item.guid);
+            this.drawCurve(newLeft, item.end, '#FAAB0C', item.type, item.guid);
             // 更新保存线段的数组对应项
             item.start = newLeft;
             item.lineObj = this.drawingObj;
           }
           if (_.isEqual(rightCircle, item.start)) {
             this.fabricObj.remove(item.lineObj);
-            this.drawLine(newRight, item.end, '#FAAB0C', item.guid);
+            this.drawCurve(newRight, item.end, '#FAAB0C', item.type, item.guid);
             // 更新保存线段的数组对应项
             item.start = newRight;
             item.lineObj = this.drawingObj;
@@ -312,11 +373,11 @@ export default {
      * @param {array} start 起点坐标
      * @param {array} end
      * @param {string} strokeColor 描边颜色
-     * @param {string} guid 已有边的guid(拖拽时用)
      * @param {string} type 已有边的方向 'left'or'right'
+     * @param {string} guid 已有边的guid(拖拽时用)
      * @return {*}
      */
-    drawLine(start, end, strokeColor, guid, type) {
+    drawLine(start, end, strokeColor, type = 'left', guid) {
       const x1 = start[0];
       const y1 = start[1];
       const x2 = end[0];
@@ -324,6 +385,29 @@ export default {
       const line = new Fabric.fabric.Line([x1, y1, x2, y2], {
         stroke: strokeColor,
         hoverCursor: 'default',
+        hasControls: false, // 关闭图层控件
+        selectable: false // 去掉选中的效果
+      });
+      // 添加自定义属性方便删除操作
+      const customId = guid ? guid : this.tempCoordinate.guid;
+      const customType = type ? type : this.tempCoordinate.type;
+      Object.assign(line, { customId, customType });
+      this.drawingObj = line;
+      this.fabricObj.add(line);
+    },
+    // 绘制三次贝塞尔曲线
+    drawCurve(start, end, strokeColor, type = 'left', guid) {
+      const x1 = start[0];
+      const y1 = start[1];
+      const x2 = end[0];
+      const y2 = end[1];
+      const c1 = this.calcControlPoint(start, end).c1;
+      const c2 = this.calcControlPoint(start, end).c2;
+      const line = new Fabric.fabric.Path(`M ${x1} ${y1}C${c1[0]},${c1[1]},${c2[0]},${c2[1]},${x2},${y2}`, {
+        stroke: strokeColor,
+        hoverCursor: 'default',
+        fill: false,
+        hasControls: false, // 关闭图层控件
         selectable: false // 去掉选中的效果
       });
       // 添加自定义属性方便删除操作
@@ -393,6 +477,27 @@ export default {
           v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
       });
+    },
+    /**
+     * @description: 已知起点和终点计算三次贝塞尔曲线的控制点
+     * @param {Array<number>} start 起点坐标
+     * @param {Array<number>} end 终点坐标
+     * @param {Number} curvature 曲率
+     * @return {Object}
+     */
+    calcControlPoint(start, end, curvature = 0.1) {
+      const x1 = start[0];
+      const y1 = start[1];
+      const x2 = end[0];
+      const y2 = end[1];
+      const cx1 = x1 + (x2 - x1) / 3 + (y2 - y1) * curvature;
+      const cy1 = y1 + (y2 - y1) / 3 + (x1 - x2) * curvature;
+      const cx2 = x1 + (x2 - x1) * 2 / 3 + (y1 - y2) * curvature;
+      const cy2 = y1 + (y2 - y1) * 2 / 3 + (x2 - x1) * curvature;
+      return {
+        c1: [Math.abs(cx1), Math.abs(cy1)],
+        c2: [Math.abs(cx2), Math.abs(cy2)]
+      };
     }
   }
 };
@@ -422,7 +527,6 @@ export default {
     background: #fff;
     text-align: center;
   }
-  // background-color: #ccc;
   ::v-deep .canvas-container{
     position: absolute!important;
     top: 0;
@@ -442,14 +546,12 @@ export default {
     height: 100%!important;
   }
   ::v-deep .vue-grid-item{
-    padding: 12px;
-    background-color: #fff;
-    border: 1px solid #D0D9D9;
-    border-radius: 5px;
-    box-shadow: 0px 2px 4px 0px rgba(119,140,118,0.08);
     z-index: 100;
     // 避免控制台提示
     touch-action: none;
+    &.vue-grid-placeholder{
+      background: transparent;
+    }
     &.vue-draggable-dragging, &.resizing {
       z-index: 1000;
     }
@@ -471,18 +573,17 @@ export default {
       cursor: default;
     }
     .circle-left{
-      left: -5px;
+      left: -4px;
       top: 50%;
       transform: translateY(-50%);
     }
     .circle-right{
-      right: -5px;
+      right: -4px;
       top: 50%;
       transform: translateY(-50%);
     }
     &:hover{
-      box-shadow: 0px 8px 12px 0px rgba(118,140,140,0.20), 0px 2px 4px 0px rgba(119,140,118,0.08);
-      border: 1px solid #13939e;
+      
       .vue-resizable-handle{
         visibility: visible;
       }
@@ -493,8 +594,20 @@ export default {
     }
   }
   .grid-item-inner{
+    padding: 12px;
     width: 100%;
     height: 100%;
+    background-color: #fff;
+    border: 1px solid #D0D9D9;
+    border-radius: 5px;
+    box-shadow: 0px 2px 4px 0px rgba(119,140,118,0.08);
+    &:hover{
+      box-shadow: 0px 8px 12px 0px rgba(118,140,140,0.20), 0px 2px 4px 0px rgba(119,140,118,0.08);
+      border: 1px solid #13939e;
+    }
   }
+}
+.grid-item-selected{
+  border: 1px solid #FAAB0C!important;
 }
 </style>
