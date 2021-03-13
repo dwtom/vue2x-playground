@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2021-03-04 14:44:17
  * @LastEditors: Dong Wei
- * @LastEditTime: 2021-03-11 18:26:44
+ * @LastEditTime: 2021-03-13 13:54:30
  * @FilePath: \vue2x-playground\src\views\draggable\DragAndLineNew.vue
 -->
 <template>
@@ -24,8 +24,6 @@
         v-show="isMenuShow"
         @click="handleLineDelete"
       >删除</div>
-      <!-- 人体图 -->
-
       <canvas id="canvasPart"></canvas>
       <GridLayout
         class="grid-layout"
@@ -74,12 +72,28 @@
         </GridItem>
       </GridLayout>
     </div>
+    <Button @click="openPreview">效果预览</Button>
     <img
       v-show="false"
       id="bodyImg"
       src="@/assets/imgs/body.png"
       alt=""
     />
+    <Modal
+      v-model="showPreview"
+      class="preview-modal"
+      title="预览"
+      width="100%"
+      footer-hide
+      :transfer="false"
+    >
+      <PreviewContent
+        ref="previewContent"
+        :layout-data="layoutShowData"
+        :lines="customLines"
+        :edit-attrs="editAttrs"
+      />
+    </Modal>
   </div>
 </template>
 
@@ -87,23 +101,33 @@
 import _ from 'lodash';
 import VueGridLayout from 'vue-grid-layout';
 import Fabric from 'fabric';
+
+import PreviewContent from './components/DragAndLinePreview';
 export default {
   name: 'DragAndLine',
   components: {
     GridLayout: VueGridLayout.GridLayout,
-    GridItem: VueGridLayout.GridItem
+    GridItem: VueGridLayout.GridItem,
+    PreviewContent
   },
   data() {
     return {
       gridConfig: { // grid组件配置
         rowHeight: 30,
-        colNum: 12,
+        colNum: 24,
         isDraggable: true,
         isResizable: true,
         responsive: false,
         preventCollision: true, // 是否防止碰撞
         verticalCompact: false, // 是否垂直压缩
         colWidth: 0 // 最小栅格宽度(计算用)
+      },
+      // 编辑页的一些属性(展示页计算用)
+      editAttrs: {
+        width: 0,
+        height: 0,
+        imgX: 0,
+        imgY: 0
       },
       // grid-layout数据
       // hasLine当前矩形是否有线（便于拖拽时判断）
@@ -115,13 +139,15 @@ export default {
         { x: 0, y: 8, w: 2, h: 2, i: 4 }
         // { x: 10, y: 0, w: 2, h: 2, i: 5 }
       ],
+      layoutShowData: [], // 用于展示的数据
       fabricObj: null, // fabric对象
       drawingObj: null, // 正在绘制的fabric对象
       deleteObj: null, // 将要删除的fabric对象(线)
       customLines: [], // 保存所有用户自定义画线（start/end: 坐标;lineObj: fabric对象, type: 左侧/右侧）
       tempCoordinate: {}, // 保存当前绘制的线段坐标
       isDrawingLine: false, // 是否开始画线
-      isMenuShow: false // 删除菜单
+      isMenuShow: false, // 删除菜单
+      showPreview: false // 显示预览
     };
   },
   mounted() {
@@ -147,6 +173,11 @@ export default {
       canvasDOM.width = width;
       canvasDOM.height = height;
       this.gridConfig.colWidth = (width - 10) / this.gridConfig.colNum - 10;
+      this.editAttrs.width = width;
+      this.editAttrs.height = height;
+      const { rowHeight, colWidth } = this.gridConfig;
+      this.editAttrs.rowHeight = rowHeight;
+      this.editAttrs.colWidth = colWidth;
     },
     // 设置fabric对象并监听事件
     setFabric() {
@@ -171,7 +202,7 @@ export default {
       });
       // 监听点击选中
       this.fabricObj.on('mouse:down', option => {
-        // 画线结束时点击不作选中操作
+        // 画线结束时的点击不作选中操作,计算点相对于图的坐标用于展示
         if (this.isDrawingLine) {
           return;
         }
@@ -180,7 +211,8 @@ export default {
         // 已经打开菜单的情况下再次点击线则关闭菜单
         if (option.target) {
           const type = option.target.get('type');
-          if (type === 'line') {
+          const lineTypes = ['line', 'path'];
+          if (lineTypes.includes(type)) {
             if (this.isMenuShow) {
               this.isMenuShow = false;
               this.deleteObj = null;
@@ -212,9 +244,11 @@ export default {
       const imgWidthOrigin = 186;
       const boxHeight = canvasDOM.height;
       const boxWidth = canvasDOM.width;
-      const left = boxWidth / 2 - imgWidthOrigin / 2; // 横向缩放较小不考虑
-      const rate = boxHeight / (imgHeightOrigin + boxHeight * 0.2); // 预留边距
-      const top = Math.abs(boxHeight - imgHeightOrigin * rate) / 2;
+      const rate = boxHeight / imgHeightOrigin * 0.8;
+      const left = (boxWidth - imgWidthOrigin * rate) / 2;
+      const top = (boxHeight - imgHeightOrigin * rate) / 2;
+      this.editAttrs.imgX = left;
+      this.editAttrs.imgY = top;
       // 即使是已经存在于html中的imgdom对象也需要在onload事件中获取，否则fabric渲染不出来
       imgDOM.onload = () => {
         const imgInstance = new Fabric.fabric.Image(imgDOM, {
@@ -239,6 +273,11 @@ export default {
     },
     // 点到矩形改变样式
     handleGridItemSelected(item) {
+      // 菜单开启时使其关闭
+      if (this.isMenuShow) {
+        this.isMenuShow = false;
+        this.deleteObj = null;
+      }
       // 改变矩形本身边框颜色
       this.layoutData.forEach(v => {
         if (v.i === item.i) {
@@ -290,7 +329,7 @@ export default {
         Object.assign(this.tempCoordinate, { lineObj: this.drawingObj });
         // 保存已画好的线
         this.customLines.push(this.tempCoordinate);
-        // 重置状态
+        // 重置状态(鼠标移动时已经画好了线，只需要结束状态即可)
         this.resetDrawStatus();
       } else {
         this.$Message.error('请在正确的位置画线');
@@ -498,116 +537,39 @@ export default {
         c1: [Math.abs(cx1), Math.abs(cy1)],
         c2: [Math.abs(cx2), Math.abs(cy2)]
       };
+    },
+    // 打开预览
+    openPreview() {
+      this.showPreview = true;
+      this.layoutShowData = _.cloneDeep(this.layoutData);
+      this.$nextTick(() => {
+        this.$refs.previewContent.initPage();
+      });
     }
   }
 };
 </script>
 <style scoped lang="less">
+@import './dragedit.less';
+</style>
+<style scoped lang="less">
 .crosshair{
   cursor: crosshair;
 }
-.canvas-layout{
-  position: relative;
-  margin-top: 10px;
-  width: 100%;
-  height: 600px;
-  overflow: hidden;
-  &:focus{
-    outline: none;
-  }
-  .menu {
-    position: absolute;
-    width: 60px;
-    height: 25px;
-    line-height: 25px;
-    border-radius: 2px;
-    border: 1px solid #D0D9D9;
-    cursor: pointer;
-    z-index: 100;
-    background: #fff;
-    text-align: center;
-  }
-  ::v-deep .canvas-container{
-    position: absolute!important;
-    top: 0;
-    left: 0;
-    z-index: 10;
-  }
-  #canvasPart{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    // background-color: skyblue;
-    border: 1px solid #000;
-  }
-  .grid-layout{
-    height: 100%!important;
-  }
-  ::v-deep .vue-grid-item{
-    z-index: 100;
-    // 避免控制台提示
-    touch-action: none;
-    &.vue-grid-placeholder{
-      background: transparent;
+.preview-modal{
+  ::v-deep .ivu-modal-wrap{
+    height: 100vh;
+    .ivu-modal{
+      top: 0;
+      height: 100%;
     }
-    &.vue-draggable-dragging, &.resizing {
-      z-index: 1000;
+    .ivu-modal-content{
+      height: 100%;
     }
-    .vue-resizable-handle{
-      visibility: hidden;
+    .ivu-modal-body{
       padding: 0;
-      bottom: -5px;
-      right: -5px;
-      background: url('~@/assets/imgs/drag_arrow.png');
-    }
-    .circle{
-      visibility: hidden;
-      position: absolute;
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      border: 1px solid #D0D9D9;
-      background-color: #fff;
-      cursor: default;
-    }
-    .circle-left{
-      left: -4px;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-    .circle-right{
-      right: -4px;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-    &:hover{
-      
-      .vue-resizable-handle{
-        visibility: visible;
-      }
-      .circle{
-        visibility: visible;
-        border-color: #13939e;
-      }
+      height: calc(100% - 51px);
     }
   }
-  .grid-item-inner{
-    padding: 12px;
-    width: 100%;
-    height: 100%;
-    background-color: #fff;
-    border: 1px solid #D0D9D9;
-    border-radius: 5px;
-    box-shadow: 0px 2px 4px 0px rgba(119,140,118,0.08);
-    &:hover{
-      box-shadow: 0px 8px 12px 0px rgba(118,140,140,0.20), 0px 2px 4px 0px rgba(119,140,118,0.08);
-      border: 1px solid #13939e;
-    }
-  }
-}
-.grid-item-selected{
-  border: 1px solid #FAAB0C!important;
 }
 </style>

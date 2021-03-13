@@ -1,0 +1,102 @@
+.canvas-layout{
+  position: relative;
+  margin-top: 10px;
+  width: 100%;
+  height: 600px;
+  overflow: hidden;
+  &:focus{
+    outline: none;
+  }
+  .menu {
+    position: absolute;
+    width: 60px;
+    height: 25px;
+    line-height: 25px;
+    border-radius: 2px;
+    border: 1px solid #D0D9D9;
+    cursor: pointer;
+    z-index: 100;
+    background: #fff;
+    text-align: center;
+  }
+  ::v-deep .canvas-container{
+    position: absolute!important;
+    top: 0;
+    left: 0;
+    z-index: 10;
+  }
+  #canvasPart{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #000;
+  }
+  .grid-layout{
+    height: 100%!important;
+  }
+  ::v-deep .vue-grid-item{
+    z-index: 100;
+    // 避免控制台提示
+    touch-action: none;
+    &.vue-grid-placeholder{
+      background: transparent;
+    }
+    &.vue-draggable-dragging, &.resizing {
+      z-index: 1000;
+    }
+    .vue-resizable-handle{
+      visibility: hidden;
+      padding: 0;
+      bottom: -5px;
+      right: -5px;
+      background: url('~@/assets/imgs/drag_arrow.png');
+    }
+    .circle{
+      visibility: hidden;
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      border: 1px solid #D0D9D9;
+      background-color: #fff;
+      cursor: default;
+    }
+    .circle-left{
+      left: -4px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .circle-right{
+      right: -4px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    &:hover{
+      .vue-resizable-handle{
+        visibility: visible;
+      }
+      .circle{
+        visibility: visible;
+        border-color: #13939e;
+      }
+    }
+  }
+  .grid-item-inner{
+    padding: 12px;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    border: 1px solid #D0D9D9;
+    border-radius: 5px;
+    box-shadow: 0px 2px 4px 0px rgba(119,140,118,0.08);
+    &:hover{
+      box-shadow: 0px 8px 12px 0px rgba(118,140,140,0.20), 0px 2px 4px 0px rgba(119,140,118,0.08);
+      border: 1px solid #13939e;
+    }
+  }
+}
+.grid-item-selected{
+  border: 1px solid #FAAB0C!important;
+}
