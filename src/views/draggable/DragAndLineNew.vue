@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2021-03-04 14:44:17
  * @LastEditors: Dong Wei
- * @LastEditTime: 2021-03-13 13:54:30
+ * @LastEditTime: 2021-03-13 15:47:41
  * @FilePath: \vue2x-playground\src\views\draggable\DragAndLineNew.vue
 -->
 <template>
@@ -127,7 +127,9 @@ export default {
         width: 0,
         height: 0,
         imgX: 0,
-        imgY: 0
+        imgY: 0,
+        rowHeight: 0, // 最小栅格宽和高
+        colWidth: 0
       },
       // grid-layout数据
       // hasLine当前矩形是否有线（便于拖拽时判断）
