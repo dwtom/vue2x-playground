@@ -74,6 +74,11 @@ const routes = [
         path: 'draggableTest',
         name: 'DraggableTest',
         component: () => import(/* webpackChunkName: "draggable" */ '@/views/draggable/DragTest')
+      },
+      {
+        path: 'tableComponent',
+        name: 'TableComponent',
+        component: () => import(/* webpackChunkName: "tableComponent" */ '@/views/iview/TableComponent')
       }
     ]
   }

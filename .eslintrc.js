@@ -60,8 +60,8 @@ module.exports = {
         objectsInObjects: false
       }
     ],
-    // 在定义对象或数组时，最后一项不能加逗号
-    'comma-dangle': [2, 'never'],
+    // 在定义对象或数组时，最后一项可以加逗号
+    'comma-dangle': 'off',
     // 在写逗号时，逗号前面不需要加空格，而逗号后面需要添加空格
     'comma-spacing': [2, { before: false, after: true }],
     // 该规则规定了在对象字面量语法中，key和value之间的空白，冒号前不要空格，冒号后面需要一个空格

@@ -3,7 +3,7 @@
  * @Author: Dong Wei
  * @Date: 2020-12-19 16:45:59
  * @LastEditors: Dong Wei
- * @LastEditTime: 2021-03-09 19:44:18
+ * @LastEditTime: 2021-11-22 15:49:57
  * @FilePath: \vue2x-playground\src\data\home.js
  */
 
@@ -91,5 +91,12 @@ export const homeList = [
     LastEditDate: '',
     desc: 'vue-grid-layout测试',
     url: 'draggableTest'
+  },
+  {
+    title: '封装iview的table组件',
+    createDate: '2021-11-22',
+    LastEditDate: '',
+    desc: '"BaseTable"组件的封装优化，不需要默认值的属性直接从应用层“穿透传入”iview的table组件中，基于inheritAttrs以及v-bind实现',
+    url: 'tableComponent'
   }
 ];
